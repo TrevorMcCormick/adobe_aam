@@ -11,6 +11,7 @@ class Login:
         ## Save credentials into environment variable
         with open(credentials_path, mode="r") as file:
             credentials = json.loads(file.read())
+            os.environ['aam_api_credentials'] = str(credentials)
 
         ## Generate JWT
         jwt_data = {
