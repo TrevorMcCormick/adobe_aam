@@ -4,8 +4,11 @@ import os
 hard_dependencies = ("datetime",
                      "json",
                      "jwt",
+                     "cryptography",
                      "os",
-                     "requests")
+                     "pandas",
+                     "requests",
+                     )
 
 missing_dependencies = []
 
@@ -22,3 +25,4 @@ if missing_dependencies:
 del hard_dependencies, dependency, missing_dependencies
 
 from .login.login import Login
+from .traits.traits import Traits
