@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 import requests
 import jwt
 import pandas as pd
-from aam_api_python.helpers.headers import Headers
+
+from aam_api_python.helpers.headers import *
+from aam_api_python.helpers.simplify import *
 
 class Traits:
 ## https://experienceleague.adobe.com/docs/audience-manager/user-guide/api-and-sdk-code/rest-apis/aam-api-getting-started.html?lang=en#optional-api-query-parameters
@@ -23,7 +25,7 @@ class Traits:
                  includePermissions=None,
                  ic=None,
                  ## These are all of the custom arguments
-                 simplify=None
+                 condense=None
                  ):
         ## Traits endpoint
         request_url = "https://aam.adobe.io/v1/traits/"
@@ -57,8 +59,8 @@ class Traits:
                 df = df.drop_duplicates()
             ## This begins the PDM section for additional functionality
             ## Simplify: limits columns
-            if simplify:
-                df = df[['sid', 'name', 'description', 'dataSourceId', 'folderId']]
+            if condense:
+                df = simplify(df)
             return df
 
     @classmethod
@@ -66,7 +68,7 @@ class Traits:
                 ## These are all of the Adobe arguments
                 sid,
                 ## These are all of PDM's custom arguments
-                simplify=None
+                condense=None
                 ):
         ## Traits endpoint for specific trait ID
         request_url = "https://aam.adobe.io/v1/traits/{0}".format(str(sid))
@@ -87,8 +89,8 @@ class Traits:
             df['updateTime'] = pd.to_datetime(df['updateTime'], unit='ms')
         ## This begins the PDM section for additional functionality
         ## Simplify: limits columns
-        if simplify:
-            df = df[['sid', 'name', 'description', 'dataSourceId', 'folderId', 'traitRule']]
+        if condense:
+            df = simplify(df)
         return df
 
     @classmethod

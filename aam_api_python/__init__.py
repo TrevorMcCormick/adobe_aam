@@ -24,6 +24,5 @@ if missing_dependencies:
     )
 del hard_dependencies, dependency, missing_dependencies
 
-from .login.login import Login
-from .traits.traits import Traits
-from .helpers.headers import Headers
+from .login.login import *
+from .traits.traits import *
