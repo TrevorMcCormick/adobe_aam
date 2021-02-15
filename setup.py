@@ -4,8 +4,9 @@ with open("readme.md", "r") as readme_file:
     readme = readme_file.read()
 
 requirements = ["PyJWT>=2.0.1",
-                "pyjwt[crypto]>=2.0.1",
-                "requests>=2"]
+                "cryptography>=3.4.4",
+                "requests>=2,
+                "pandas>=0.25.0"]
 
 setup(
     name="adobe_aam_python",
