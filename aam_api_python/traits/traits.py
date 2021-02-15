@@ -112,11 +112,16 @@ class Traits:
             df = df.transpose()
             return df
 
-#   @classmethod
-#   def create(cls, traits):
-#     ## Required columns
-#     required_columns = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule', 'ttl', 'description', 'comments'])
-#     df = pd.read_csv(traits, engine='python')
-#     if list(df.columns) != list(required_columns.columns):
-#       required_columns.to_csv('aam_trait_create_template.csv')
-#       raise Exception('Column names are incorrect. Please re-upload file with template.')
+    @classmethod
+    def create_from_csv(cls, file_path):
+        ## Required columns for API call
+        reqd_cols = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule', 'ttl', 'description', 'comments'])
+        ## Load csv into pandas df
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path, engine='python')
+        else:
+            raise Exception('File type is not csv. If file type is .xslx, please use create_from_xlsx.')
+        ## Check for reqd cols
+        if list(df.columns) != list(required_columns.columns):
+            reqd_cols.to_csv('aam_trait_create_template.csv')
+            raise Exception('Column names are incorrect. Please re-upload file with template.')
