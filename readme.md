@@ -54,8 +54,35 @@ output.to_csv('path/to/your_aam_output.csv')
 ### Coverage:
 [Every standard API call for AAM can be found on Swagger](https://bank.demdex.com/portal/swagger/index.html#/)
 
-#### Traits API
-🗹    Get Traits
-🗹    Create Traits
-🗹    Delete Traits
-☐    Update Traits
+| Endpoint        | Action | Coverage |
+|-----------------|--------|----------|
+| Traits          | Create | 🗹        |
+| Traits          | Get    | 🗹        |
+| Traits          | Update | 🗹        |
+| Traits          | Delete | 🗹        |
+| Segments        | Create | ☐        |
+| Segments        | Get    | ☐        |
+| Segments        | Update | ☐        |
+| Segments        | Delete | ☐        |
+| Destinations    | Create | ☐        |
+| Destinations    | Get    | ☐        |
+| Destinations    | Update | ☐        |
+| Destinations    | Delete | ☐        |
+| Derived Signals | Create | ☐        |
+| Derived Signals | Get    | ☐        |
+| Derived Signals | Update | ☐        |
+| Derived Signals | Delete | ☐        |
+| Datasources     | Create | ☐        |
+| Datasources     | Get    | ☐        |
+| Datasources     | Update | ☐        |
+| Datasources     | Delete | ☐        |
+| Trait Folder    | Create | ☐        |
+| Trait Folder    | Get    | ☐        |
+| Trait Folder    | Update | ☐        |
+| Trait Folder    | Delete | ☐        |
+| Segment Folder  | Create | ☐        |
+| Segment Folder  | Get    | ☐        |
+| Segment Folder  | Update | ☐        |
+| Segment Folder  | Delete | ☐        |
+
+Custom reporting will be added according to roadmap
