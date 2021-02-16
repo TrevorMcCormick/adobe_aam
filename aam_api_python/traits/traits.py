@@ -213,3 +213,47 @@ class Traits:
                 print("Attempt to delete trait {0} was unsuccessful. \nError code {1}. \nReason: {2}".format(sid, response.status_code, response.content.decode('utf-8')))
             else:
                 return "Trait {0} successfully deleted.".format(sid)
+
+    @classmethod
+    def update_many(cls, file_path):
+        ## Required columns for API call
+        reqd_cols = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'sid'])
+        ## Load csv into pandas df
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path, engine='python')
+        else:
+            raise Exception('File type is not csv.')
+        ## Check for reqd cols
+        if list(reqd_cols.columns) != list(df.columns):
+            reqd_cols.to_csv('aam_trait_update_template.csv', index=False)
+            raise Exception('CSV should include at least the following columns, with additional columns you want to update. Please re-upload file using template.')
+        
+        ## Declare counter vars
+        num_traits_in_file = len(df)
+        num_successful_traits = 0
+        
+        ## Handle for bad traits
+        unsuccessful_traits = pd.DataFrame()
+        
+        ## Get request data
+        traits_as_dict = df.to_dict(orient='records')
+
+        for trait in traits_as_dict:
+            sid = trait['sid']
+            trait_json = json.dumps(trait)  
+            request_url = "https://api.demdex.com/v1/traits/{0}".format(sid)
+            response = requests.put(url = request_url,
+                                    headers = Headers.createHeaders(traitCreate=True),
+                                    data = trait_json)
+            ## Print error code if get request is unsuccessful
+            if response.status_code != 200:
+                print("Attempt to update trait {0} was unsuccessful. \nError code {1}. \nReason: {2}".format(sid, response.status_code, response.content.decode('utf-8')))
+                unsuccessful_traits = unsuccessful_traits.append(trait, ignore_index=True)
+            else:
+                num_successful_traits += 1
+ 
+        ## Return bad traits
+        if len(unsuccessful_traits) > 0:
+            unsuccessful_traits.to_csv('aam_unsuccessful_traits.csv', index=False)
+            print('Unsuccessful traits written to aam_unsuccessful_traits.csv')
+        return "{0} of {1} traits in file successfully updated.".format(num_successful_traits, num_traits_in_file)
