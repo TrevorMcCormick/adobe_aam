@@ -10,7 +10,8 @@ class Headers:
                           "x-api-key": credentials['client_id'],
                           "x-gw-ims-org-id": credentials['org_id']}
         if traitCreate:
-            request_headers = {"Authorization": "Bearer {0}".format(os.environ.get('aam_api_token')),
+            request_headers = {"accept": "application/json",
+                               "Authorization": "Bearer {0}".format(os.environ.get('aam_api_token')),
                                "x-api-key": credentials['client_id'],
                                "x-gw-ims-org-id": credentials['org_id'],
                                "content-type": "application/json"}
