@@ -4,7 +4,16 @@ This is a Python wrapper for the Adobe Audience Manager API.
 
 To get started [Generate a JWT Authentication using Adobe IO](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/jwt.md)
 
-This package requires you to create a .json document with the following credential details: client ID, client secret, tech account ID, tech account email, and organization ID. In a separate file, you also need generate a public/private key pair.
+This package requires you to create a .json document with the following credential details: client ID, client secret, tech account ID, and organization ID. In a separate file, you also need generate a public/private key pair.
+
+```json
+{
+    "client_id":"...",
+    "client_secret": "...",
+    "tech_acct_id": "...",
+    "org_id": "..."
+}
+```
 
 Once you have these documents, you can get install the package and login:
 
