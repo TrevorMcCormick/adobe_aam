@@ -195,12 +195,21 @@ class Traits:
         return "{0} of {1} traits in file successfully deleted.".format(num_successful_traits, num_traits_in_file)
     
     @classmethod
-    def delete_one(cls, sid):
+    def delete_one(cls, sid, ic=None):
         ## Traits endpoint for delete is old demdex URL
         request_url = "https://api.demdex.com/v1/traits/{0}".format(str(sid))
+        if ic:
+            request_url = "https://api.demdex.com/v1/traits/{0}".format(str(ic))
+        
         response = requests.delete(url = request_url,
                                    headers = Headers.createHeaders())     
-        if response.status_code != 204:
-            print("Attempt to delete trait {0} was unsuccessful. \nError code {1}. \nReason: {2}".format(sid, response.status_code, response.content.decode('utf-8')))
+        if ic:
+            if response.status_code != 204:
+                print("Attempt to delete trait with ic={0} was unsuccessful. \nError code {1}. \nReason: {2}".format(ic, response.status_code, response.content.decode('utf-8')))
+            else:
+                return "Trait with ic={0} successfully deleted.".format(ic)
         else:
-            return "Trait {0} successfully deleted.".format(sid)
+            if response.status_code != 204:
+                print("Attempt to delete trait {0} was unsuccessful. \nError code {1}. \nReason: {2}".format(sid, response.status_code, response.content.decode('utf-8')))
+            else:
+                return "Trait {0} successfully deleted.".format(sid)
