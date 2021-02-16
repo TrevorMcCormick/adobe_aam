@@ -14,3 +14,30 @@ adobe_aam_python.Login('path/to/credentials.json', 'path/to/private.key')
 ```
 
 Your authentication token should be tied to a Product Profile, which controls the actions you can execute and the objects on which you can act. If you are unable to perform an action supported by this package, the error is likely due to a permissions issue within the credentials setup.
+
+Here are some examples:
+
+```py
+# Get traits by folder and sort
+aam.Traits.get_many(folderId=12345, sortBy='createTime', descending=True)
+
+# Get trait by sid
+aam.Traits.get_one(sid=12345)
+
+# Get traits by integration code and simplify resulting dataframe
+aam.Traits.get_many(ic='code', condense=True)
+
+# Get trait limits of account
+aam.Traits.get_limits()
+
+# Create traits from csv
+aam.Traits.create_from_csv('path/to/traits_to_create.csv')
+```
+
+If you're new to Python and want to output the results of an AAM API call, you can try something like the following:
+
+```py
+import pandas as pd
+output = aam.Traits.get_one(sid=12345)
+output.to_csv('path/to/your_aam_output.csv')
+```
