@@ -114,6 +114,8 @@ class Traits:
 
     @classmethod
     def create_from_csv(cls, file_path):
+        ## Traits endpoint for create is old demdex URL
+        request_url = "https://api.demdex.com/v1/traits/"
         ## Required columns for API call
         reqd_cols = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule', 'ttl', 'description', 'comments'])
         ## Load csv into pandas df
@@ -122,6 +124,32 @@ class Traits:
         else:
             raise Exception('File type is not csv. If file type is .xslx, please use create_from_xlsx.')
         ## Check for reqd cols
-        if list(df.columns) != list(required_columns.columns):
-            reqd_cols.to_csv('aam_trait_create_template.csv')
+        if list(df.columns) != list(reqd_cols.columns):
+            reqd_cols.to_csv('aam_trait_create_template.csv', index=False)
             raise Exception('Column names are incorrect. Please re-upload file with template.')
+        traits_as_dict = df.to_dict(orient='records')
+        
+        ## Declare counter vars
+        num_traits_in_file = len(traits_as_dict)
+        num_successful_traits = 0
+        
+        ## Handle for bad traits
+        unsuccessful_traits = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule', 'ttl', 'description', 'comments'])
+               
+        for trait in traits_as_dict:
+            trait_json = json.dumps(trait)
+            response = requests.post(url = request_url,
+                                    headers = Headers.createHeaders(traitCreate=True),
+                                    data=trait_json)
+            ## Print error code if get request is unsuccessful
+            if response.status_code != 201:
+                print("Attempt to create trait {0} was unsuccessful. \nError code {1}. \nReason: {2}".format(trait['name'], response.status_code, response.content.decode('utf-8')))
+                unsuccessful_traits = unsuccessful_traits.append(trait, ignore_index=True)
+            else:
+                num_successful_traits += 1
+        
+        ## Return bad traits
+        if len(unsuccessful_traits) > 0:
+            unsuccessful_traits.to_csv('aam_unsuccessful_traits.csv', index=False)
+            print('Unsuccessful traits written to aam_unsuccessful_traits.csv')
+        return "{0} of {1} traits in file successfully created.".format(num_successful_traits, num_traits_in_file)
