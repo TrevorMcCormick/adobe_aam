@@ -10,7 +10,7 @@ Once you have these documents, you can get install the package and login:
 
 ```py
 import adobe_aam_python as aam
-adobe_aam_python.Login('path/to/credentials.json', 'path/to/private.key')
+aam.Login('path/to/credentials.json', 'path/to/private.key')
 ```
 
 Your authentication token should be tied to a Product Profile, which controls the actions you can execute and the objects on which you can act. If you are unable to perform an action supported by this package, the error is likely due to a permissions issue within the credentials setup.
