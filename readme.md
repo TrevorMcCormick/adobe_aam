@@ -50,3 +50,12 @@ import pandas as pd
 output = aam.Traits.get_one(sid=12345)
 output.to_csv('path/to/your_aam_output.csv')
 ```
+
+### Coverage:
+[Every standard API call for AAM can be found on Swagger](https://bank.demdex.com/portal/swagger/index.html#/)
+
+#### Traits API
+🗹    Get Traits
+🗹    Create Traits
+🗹    Delete Traits
+☐    Update Traits
