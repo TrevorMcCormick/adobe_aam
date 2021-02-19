@@ -6,7 +6,7 @@ with open("readme.md", "r") as readme_file:
 requirements = ["PyJWT>=2.0.1",
                 "cryptography>=3.4.4",
                 "requests>=2",
-                "pandas>=1.2.2"]
+                "pandas>=1.1.5"]
 
 setup(
     name="adobe_aam",
