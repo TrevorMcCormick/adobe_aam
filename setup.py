@@ -9,7 +9,7 @@ requirements = ["PyJWT>=2.0.1",
                 "pandas>=1.2.2"]
 
 setup(
-    name="adobe_aam_python",
+    name="adobe_aam",
     version="0.0.1",
     author="Trevor McCormick",
     author_email="trevor.ryan.mccormick@gmail.com",

@@ -6,6 +6,7 @@ To get started [Generate a JWT Authentication using Adobe IO](https://www.adobe.
 
 This package requires you to create a .json document with the following credential details: client ID, client secret, tech account ID, and organization ID. In a separate file, you also need generate a public/private key pair.
 
+credentials.json:
 ```json
 {
     "client_id":"...",
@@ -17,6 +18,12 @@ This package requires you to create a .json document with the following credenti
 
 Once you have these documents, you can get install the package and login:
 
+Terminal:
+```
+pip install adobe_aam
+```
+
+Python:
 ```py
 import adobe_aam_python as aam
 aam.Login('path/to/credentials.json', 'path/to/private.key')
@@ -26,6 +33,7 @@ Your authentication token should be tied to a Product Profile, which controls th
 
 Here are some examples:
 
+Python:
 ```py
 # Get traits by folder and sort
 aam.Traits.get_many(folderId=12345, sortBy='createTime', descending=True)
@@ -45,6 +53,7 @@ aam.Traits.create_from_csv('path/to/traits_to_create.csv')
 
 If you're new to Python and want to output the results of an AAM API call, you can try something like the following:
 
+Python:
 ```py
 import pandas as pd
 output = aam.Traits.get_one(sid=12345)
