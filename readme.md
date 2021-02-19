@@ -25,7 +25,7 @@ pip install adobe_aam
 
 Python:
 ```py
-import adobe_aam_python as aam
+import adobe_aam as aam
 aam.Login('path/to/credentials.json', 'path/to/private.key')
 ```
 
