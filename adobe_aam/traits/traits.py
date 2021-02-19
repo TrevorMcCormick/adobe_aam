@@ -6,8 +6,8 @@ import requests
 import jwt
 import pandas as pd
 
-from aam_api_python.helpers.headers import *
-from aam_api_python.helpers.simplify import *
+from adobe_aam.helpers.headers import *
+from adobe_aam.helpers.simplify import *
 
 class Traits:
 ## https://experienceleague.adobe.com/docs/audience-manager/user-guide/api-and-sdk-code/rest-apis/aam-api-getting-started.html?lang=en#optional-api-query-parameters
