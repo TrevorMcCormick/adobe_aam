@@ -10,7 +10,7 @@ requirements = ["PyJWT>=2.0.1",
 
 setup(
     name="adobe_aam",
-    version="0.0.2",
+    version="0.0.3",
     author="Trevor McCormick",
     author_email="trevor.ryan.mccormick@gmail.com",
     description="Adobe Audience Manager API Python Extension",
