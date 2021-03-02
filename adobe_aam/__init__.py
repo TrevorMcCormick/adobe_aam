@@ -7,7 +7,7 @@ hard_dependencies = ("datetime",
                      "cryptography",
                      "os",
                      "pandas",
-                     "requests",
+                     "requests"
                      )
 
 missing_dependencies = []
@@ -26,3 +26,4 @@ del hard_dependencies, dependency, missing_dependencies
 
 from .login.login import *
 from .traits.traits import *
+from .reports.reports import *

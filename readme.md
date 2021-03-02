@@ -94,4 +94,17 @@ output.to_csv('path/to/your_aam_output.csv')
 | Segment Folder  | Update | -        |
 | Segment Folder  | Delete | -        |
 
-Custom reporting will be added according to roadmap
+Custom reporting will be added according to roadmap. Examples:
+
+```py
+# Get traits trends for all SIDs in a folder
+aam.Reports.traits_trend(startDate="2021-02-21",
+                         endDate="2021-02-23",
+                         folderId=12345)
+                         
+# Get traits trends for one SID
+aam.Reports.traits_trend(startDate="2021-02-21",
+                         endDate="2021-02-23",
+                         sid=[12345])
+```
+                  
