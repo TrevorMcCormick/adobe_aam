@@ -139,7 +139,7 @@ class Traits:
         for trait in traits_as_dict:
             trait_json = json.dumps(trait)
             response = requests.post(url = request_url,
-                                    headers = Headers.createHeaders(traitCreate=True),
+                                    headers = Headers.createHeaders(json=True),
                                     data=trait_json)
             ## Print error code if get request is unsuccessful
             if response.status_code != 201:
@@ -243,7 +243,7 @@ class Traits:
             trait_json = json.dumps(trait)  
             request_url = "https://api.demdex.com/v1/traits/{0}".format(sid)
             response = requests.put(url = request_url,
-                                    headers = Headers.createHeaders(traitCreate=True),
+                                    headers = Headers.createHeaders(json=True),
                                     data = trait_json)
             ## Print error code if get request is unsuccessful
             if response.status_code != 200:
