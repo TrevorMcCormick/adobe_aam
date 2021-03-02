@@ -24,6 +24,8 @@ class Traits:
                  permissions=None,
                  includePermissions=None,
                  ic=None,
+                 dataSourceId=None,
+                 includeDetails=None,
                  ## These are all of the custom arguments
                  condense=None
                  ):
@@ -39,7 +41,9 @@ class Traits:
                         "search":search,
                         "folderId":folderId,
                         "permissions":permissions,
-                        "includePermissions":includePermissions}
+                        "includePermissions":includePermissions,
+                        "dataSourceId":dataSourceId,
+                        "includeDetails":includeDetails}
         ## Make request 
         response = requests.get(url = request_url,
                                 headers = Headers.createHeaders(),
