@@ -21,7 +21,6 @@ class Reports:
                  interval="1D",
                  sid=None,
                  ## These are custom arguments
-                 identity="DEVICE",
                  folderId=None,
                  dataSourceId=None
                  ):
@@ -42,29 +41,50 @@ class Reports:
             sids = Traits.get_many(folderId=folderId)
             sid = list(sids['sid'])
         
-        request_data = {"startDate":startDate_unix,
-                        "endDate":endDate_unix,
-                        "interval":interval,
-                        "sids":[sid],
-                        "traitMetricsType":identity}
+        def traits_trend_identity(identity):
+            request_data = {"startDate":startDate_unix,
+                            "endDate":endDate_unix,
+                            "interval":interval,
+                            "sids":[sid],
+                            "traitMetricsType":identity}
+
+            ## Make request 
+            general_headers = Headers.createHeaders()
+            reporting_headers = {"accept": "application/json, text/plain, */*"}
+
+            response = requests.post(url = request_url,
+                                    headers = {**general_headers, **reporting_headers},
+                                    data = request_data) 
+            ## Print error code if get request is unsuccessful
+            if response.status_code != 200:
+                print(response.content)
+            else:
+                ## Make a dataframe out of the response.json object
+                raw_data = response.content
+                columns = raw_data.decode('utf-8').replace('"','').split("\n")[0].split(",")
+                traits_trend_identity = pd.DataFrame(columns=columns)
+                for i in range(1,len(sid)+1):
+                    # The code below handles for trait names with commas in them.
+                    try:
+                        traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[1].split(",")
+                        trait_name = []
+                        for i in traits_trend_row:
+                            if ' ' in i:
+                                trait_name.append(traits_trend_row.index(i))
+                        traits_trend_row_left = traits_trend_row[0:3]
+                        traits_trend_row_mid = traits_trend_row[trait_name[0]:trait_name[-1]+1]
+                        traits_trend_row_mid = ','.join(traits_trend_row_mid)
+                        traits_trend_row_right = traits_trend_row[trait_name[-1]+1:]
+                        traits_trend_name = []
+                        traits_trend_name.append(traits_trend_row_mid)
+                        traits_trend_new = traits_trend_row_left + traits_trend_name + traits_trend_row_right
+                        series = pd.Series(traits_trend_new, index = traits_trend_identity.columns)
+                        traits_trend_identity = traits_trend_identity.append(series, ignore_index=True)
+                    except:
+                        traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[i].split(",")
+                        print('Trait ID {0} has commas in weird spots.'.format(traits_trend_row[0]))
+            return traits_trend_identity
         
-        ## Make request 
-        general_headers = Headers.createHeaders()
-        reporting_headers = {"accept": "application/json, text/plain, */*"}
-        
-        response = requests.post(url = request_url,
-                                headers = {**general_headers, **reporting_headers},
-                                data = request_data) 
-        ## Print error code if get request is unsuccessful
-        if response.status_code != 200:
-            print(response.content)
-        else:
-            ## Make a dataframe out of the response.json object
-            raw_data = response.content
-            columns = raw_data.decode('utf-8').replace('"','').split("\n")[0].split(",")
-            traits_trend = pd.DataFrame(columns=columns)
-            for i in range(1,len(sid)+1):
-                traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[i].split(",")
-                series = pd.Series(traits_trend_row, index = traits_trend.columns)
-                traits_trend = traits_trend.append(series, ignore_index=True)
-        return traits_trend
+        traits_trend_device = traits_trend_identity('DEVICE')
+        #traits_trend_xdevice = traits_trend_identity('CROSS_DEVICE')
+        return traits_trend_device
