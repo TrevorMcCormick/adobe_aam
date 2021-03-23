@@ -22,7 +22,8 @@ class Reports:
                  sid=None,
                  ## These are custom arguments
                  identity="DEVICE",
-                 folderId=None
+                 folderId=None,
+                 dataSourceId=None
                  ):
         ## Traits-trend reporting endpoint
         request_url = "https://api.demdex.com/v1/reports/traits-trend"
@@ -31,6 +32,10 @@ class Reports:
         startDate_unix = int(datetime.datetime.strptime(startDate, "%Y-%m-%d").timestamp())*1000
         endDate_unix = int(datetime.datetime.strptime(endDate, "%Y-%m-%d").timestamp())*1000
         
+        ## Gets all trait IDs in datasource id
+        if dataSourceId:
+            sids = Traits.get_many(dataSourceId=dataSourceId)
+            sid = list(sids['sid'])
         
         ## Runs traits get for folder ID to produce an array of trait IDs from folder ID
         if folderId:
