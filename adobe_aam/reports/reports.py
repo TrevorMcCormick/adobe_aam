@@ -31,15 +31,21 @@ class Reports:
         startDate_unix = int(datetime.datetime.strptime(startDate, "%Y-%m-%d").timestamp())*1000
         endDate_unix = int(datetime.datetime.strptime(endDate, "%Y-%m-%d").timestamp())*1000
         
+        ## Gets details for just one sid
+        if sid:
+            sid_extra = Traits.get_one(sid=sid[0])[["traitRule", "traitRuleVersion", "type", "backfillStatus"]]
+        
         ## Gets all trait IDs in datasource id
         if dataSourceId:
-            sids = Traits.get_many(dataSourceId=dataSourceId)
+            sids = Traits.get_many(dataSourceId=dataSourceId, includeDetails=True)
             sid = list(sids['sid'])
+            sid_extra = sids[["traitRule", "traitRuleVersion", "type", "backfillStatus"]]
         
         ## Runs traits get for folder ID to produce an array of trait IDs from folder ID
         if folderId:
             sids = Traits.get_many(folderId=folderId)
             sid = list(sids['sid'])
+            sid_extra = sids[["traitRule", "traitRuleVersion", "type", "backfillStatus"]]
         
         def traits_trend_identity(identity):
             request_data = {"startDate":startDate_unix,
@@ -89,9 +95,11 @@ class Reports:
                         traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[i].split(",")
                         print('Trait ID {0} has commas in weird spots.'.format(traits_trend_row[0]))
             return traits_trend_identity
-        
         traits_trend_device = traits_trend_identity('DEVICE')
         traits_trend_xdevice = traits_trend_identity('CROSS_DEVICE')
         traits_trend_xdevice_metrics = traits_trend_xdevice.iloc[:,4:]
         traits_trend_merged = pd.merge(traits_trend_device, traits_trend_xdevice_metrics, left_index=True, right_index=True)
-        return traits_trend_merged
+        traits_trend_merged_details = pd.merge(traits_trend_merged, sid_extra, left_index=True, right_index=True)
+        
+        
+        return traits_trend_merged_details
