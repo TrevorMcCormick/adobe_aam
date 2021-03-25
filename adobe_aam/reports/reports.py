@@ -72,28 +72,27 @@ class Reports:
                     columns[col] = '{0}_'.format(identity) + columns[col]
                 traits_trend_identity = pd.DataFrame(columns=columns)
                 for i in range(1,len(sid)+1):
-                    # The code below handles for trait names with commas in them.
-                    try:
-                        traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[1].split(",")
-                        trait_name = []
-                        if len(traits_trend_row) > 13:
-                            for i in traits_trend_row:
-                                if ' ' in i:
-                                    trait_name.append(traits_trend_row.index(i))
-                            traits_trend_row_left = traits_trend_row[0:3]
-                            traits_trend_row_mid = traits_trend_row[trait_name[0]:trait_name[-1]+1]
-                            traits_trend_row_mid = ','.join(traits_trend_row_mid)
-                            traits_trend_row_right = traits_trend_row[trait_name[-1]+1:]
-                            traits_trend_name = []
-                            traits_trend_name.append(traits_trend_row_mid)
-                            traits_trend_new = traits_trend_row_left + traits_trend_name + traits_trend_row_right
-                            series = pd.Series(traits_trend_new, index = traits_trend_identity.columns)
-                        else:
-                            series = pd.Series(traits_trend_row, index = traits_trend_identity.columns)
-                        traits_trend_identity = traits_trend_identity.append(series, ignore_index=True)
-                    except:
-                        traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[i].split(",")
-                        print('Trait ID {0} has commas in weird spots.'.format(traits_trend_row[0]))
+                    traits_trend_row = raw_data.decode('utf-8').replace('"','').split("\n")[i].split(",")
+                    trait_name = []
+                    series = None
+                    if len(traits_trend_row) > 13:
+                        for i in traits_trend_row:
+                            if ' ' in i:
+                                trait_name.append(traits_trend_row.index(i))
+                                traits_trend_row_left = traits_trend_row[0:3]
+                                traits_trend_row_mid = traits_trend_row[trait_name[0]:trait_name[-1]+1]
+                                traits_trend_row_mid = ','.join(traits_trend_row_mid)
+                                traits_trend_row_right = traits_trend_row[trait_name[-1]+1:]
+                                traits_trend_name = []
+                                traits_trend_name.append(traits_trend_row_mid)
+                                traits_trend_new = traits_trend_row_left + traits_trend_name + traits_trend_row_right
+                                try:
+                                    series = pd.Series(traits_trend_new, index = traits_trend_identity.columns)
+                                except:
+                                    pass
+                    else:
+                        series = pd.Series(traits_trend_row, index = traits_trend_identity.columns)
+                    traits_trend_identity = traits_trend_identity.append(series, ignore_index=True)
             return traits_trend_identity
         traits_trend_device = traits_trend_identity('DEVICE')
         traits_trend_xdevice = traits_trend_identity('CROSS_DEVICE')
