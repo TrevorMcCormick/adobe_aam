@@ -26,6 +26,7 @@ class Traits:
                  ic=None,
                  dataSourceId=None,
                  includeDetails=None,
+                 includeMetrics=None,
                  ## These are all of the custom arguments
                  condense=None
                  ):
@@ -43,7 +44,8 @@ class Traits:
                         "permissions":permissions,
                         "includePermissions":includePermissions,
                         "dataSourceId":dataSourceId,
-                        "includeDetails":includeDetails}
+                        "includeDetails":includeDetails,
+                        "includeMetrics":includeMetrics}
         ## Make request 
         response = requests.get(url = request_url,
                                 headers = Headers.createHeaders(),
@@ -71,15 +73,20 @@ class Traits:
     def get_one(cls,
                 ## These are all of the Adobe arguments
                 sid,
+                includeMetrics=None,
                 ## These are all of PDM's custom arguments
                 condense=None
                 ):
         ## Traits endpoint for specific trait ID
         request_url = "https://aam.adobe.io/v1/traits/{0}".format(str(sid))
         
+        ## Required data
+        request_data = {"includeMetrics":includeMetrics}        
+        
         ## Make request 
         response = requests.get(url = request_url,
-                                headers = Headers.createHeaders()) 
+                                headers = Headers.createHeaders(),
+                               params = request_data) 
         
         ## Print error code if get request is unsuccessful
         if response.status_code != 200:
