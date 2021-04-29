@@ -69,10 +69,12 @@ output.to_csv('path/to/your_aam_output.csv')
 | Traits          | Get    | x        |
 | Traits          | Update | x        |
 | Traits          | Delete | x        |
-| Segments        | Create | -        |
-| Segments        | Get    | -        |
-| Segments        | Update | -        |
-| Segments        | Delete | -        |
+| Segments        | Create | x        |
+| Segments        | Get    | x        |
+| Segments        | Update | x        |
+| Segments        | Delete | x        |
+| Trait Folder    | Get    | x        |
+| Segment Folder  | Get    | x        |
 | Destinations    | Create | -        |
 | Destinations    | Get    | -        |
 | Destinations    | Update | -        |
@@ -85,14 +87,7 @@ output.to_csv('path/to/your_aam_output.csv')
 | Datasources     | Get    | -        |
 | Datasources     | Update | -        |
 | Datasources     | Delete | -        |
-| Trait Folder    | Create | -        |
-| Trait Folder    | Get    | -        |
-| Trait Folder    | Update | -        |
-| Trait Folder    | Delete | -        |
-| Segment Folder  | Create | -        |
-| Segment Folder  | Get    | -        |
-| Segment Folder  | Update | -        |
-| Segment Folder  | Delete | -        |
+
 
 Custom reporting will be added according to roadmap. Examples:
 
