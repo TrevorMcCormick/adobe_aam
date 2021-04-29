@@ -26,4 +26,7 @@ del hard_dependencies, dependency, missing_dependencies
 
 from .login.login import *
 from .traits.traits import *
+from .segments.segments import *
 from .reports.reports import *
+from .traitFolders.traitFolders import *
+from .segmentFolders.segmentFolders import *
