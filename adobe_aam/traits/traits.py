@@ -178,7 +178,8 @@ class Traits:
         else:
             raise Exception('File type is not csv.')
         ## Check for reqd cols
-        if list(df.columns) != list(reqd_cols.columns):
+        col_check = all(item in reqd_cols.columns for item in df.columns)
+        if not col_check:
             reqd_cols.to_csv('aam_trait_delete_template.csv', index=False)
             raise Exception('Column name should be sid. Please re-upload file with template.')
         
