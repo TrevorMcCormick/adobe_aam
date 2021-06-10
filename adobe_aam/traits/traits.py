@@ -128,16 +128,17 @@ class Traits:
         ## Traits endpoint for create is old demdex URL
         request_url = "https://api.demdex.com/v1/traits/"
         ## Required columns for API call
-        reqd_cols = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule', 'ttl', 'description', 'comments'])
+        reqd_cols = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule'])
         ## Load csv into pandas df
         if file_path.endswith('.csv'):
             df = pd.read_csv(file_path, engine='python')
         else:
             raise Exception('File type is not csv.')
         ## Check for reqd cols
-        if list(df.columns) != list(reqd_cols.columns):
+        col_check = all(item in reqd_cols.columns for item in df.columns)
+        if not col_check:
             reqd_cols.to_csv('aam_trait_create_template.csv', index=False)
-            raise Exception('Column names are incorrect. Please re-upload file with template.')
+            raise Exception('Missing one or more required columns. Please re-upload file with template.')
         traits_as_dict = df.to_dict(orient='records')
         
         ## Declare counter vars
@@ -145,7 +146,7 @@ class Traits:
         num_successful_traits = 0
         
         ## Handle for bad traits
-        unsuccessful_traits = pd.DataFrame(columns=['traitType', 'name', 'dataSourceId', 'folderId', 'traitRule', 'ttl', 'description', 'comments'])
+        unsuccessful_traits = pd.DataFrame(columns=df.columns)
                
         for trait in traits_as_dict:
             trait_json = json.dumps(trait)
