@@ -149,16 +149,17 @@ class Segments:
         ## Segments endpoint for create is old demdex URL
         request_url = "https://api.demdex.com/v1/segments/"
         ## Required columns for API call
-        reqd_cols = pd.DataFrame(columns=['dataSourceId', 'name', 'description', 'segmentRule', 'folderId'])
+        reqd_cols = pd.DataFrame(columns=['dataSourceId', 'name', 'segmentRule', 'folderId'])
         ## Load csv into pandas df
         if file_path.endswith('.csv'):
             df = pd.read_csv(file_path, engine='python')
         else:
             raise Exception('File type is not csv.')
         ## Check for reqd cols
-        if list(df.columns) != list(reqd_cols.columns):
+        col_check = all(item in reqd_cols.columns for item in df.columns)
+        if not col_check:
             reqd_cols.to_csv('aam_segment_create_template.csv', index=False)
-            raise Exception('Column names are incorrect. Please re-upload file with template.')
+            raise Exception('Missing one or more required columns. Please re-upload file with template.')
         segments_as_dict = df.to_dict(orient='records')
         
         ## Declare counter vars
@@ -166,7 +167,7 @@ class Segments:
         num_successful_segments = 0
         
         ## Handle for bad Segments
-        unsuccessful_segments = pd.DataFrame(columns=['dataSourceId', 'name', 'description', 'segmentRule', 'folderId'])
+        unsuccessful_segments = pd.DataFrame(columns=df.columns)
                
         for segment in segments_as_dict:
             segment_json = json.dumps(segment)
