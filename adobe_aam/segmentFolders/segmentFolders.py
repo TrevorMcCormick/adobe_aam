@@ -83,42 +83,27 @@ class SegmentFolders:
     @classmethod
     def get_one(cls,
         folderId,
-        includeSubFolders=None):
+        get_children=None,
+        get_parents=None):
             """
-                Get one AAM segmentFolder.
+                Get one AAM SegmentFolder.
                 Args:
                     includeSubFolders: (bool) Scans subfolders and returns in df.
                 Returns:
                     df of one folderId, with optional subfolders, provided the AAM API user has READ access.
             """
-            request_url = "https://api.demdex.com/v1/folders/segments/{0}".format(folderId)
-            request_data = {"includeSubFolders":includeSubFolders}
-            ## Make request 
-            response = requests.get(url = request_url,
-                                    headers = Headers.createHeaders(),
-                                    params = request_data) 
-            ## Print error code if get request is unsuccessful
-            if response.status_code != 200:
-                print(response.content)
-            else:
-                if includeSubFolders == True:
-                    folders_json = response.json()
-                    folders_flat = flattenJson(folders_json)
-                    df = folders_flat
-                    folderIDs = []
-                    parentFolderIDs = []
-                    paths = []
-                    for k, v in folders_flat.items():
-                        if k.endswith("folderId") == True:
-                            folderIDs.append(v)
-                        elif k.endswith("parentFolderId"):
-                            parentFolderIDs.append(v)
-                        elif k.endswith("path"):
-                            paths.append(v)
-                    df = pd.DataFrame({'folderId':folderIDs, 'parentFolderId':parentFolderIDs, 'path':paths})
-                else:
-                    df = bytesToJson(response.content)
-                return df
+            df = SegmentFolders.get_many()
+            df1 = df[df['folderId']==folderId]
+            df1['level'] = ['0'] * len(df1)
+            if get_children:
+              df_children = df[df['parentFolderId']==folderId]
+              df_children['level'] = ['-1'] * len(df_children)
+              df1 = df1.append(df_children)
+            if get_parents:
+              df_parents = df[df['folderId']==df1['parentFolderId'].iloc[0]]
+              df_parents['level'] = ['+1'] * len(df_parents)
+              df1 = df1.append(df_parents)
+            return df1
 
     @classmethod
     def search(cls, search, keywords):
