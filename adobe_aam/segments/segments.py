@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 import requests
 import jwt
+import numpy as np
 import pandas as pd
 
 from adobe_aam.helpers.headers import *
@@ -13,7 +14,7 @@ class Segments:
     @classmethod
     def get_many(cls,
             ## These are all of the Adobe arguments
-            containsTrait=None,
+            containssegment=None,
             folderId=None,
             includePermissions=None,
             permission=None,
@@ -22,7 +23,7 @@ class Segments:
             dataSourceId=None,
             mergeRuleDataSourceId=None,
             pid=None,
-            includeTraitDataSourceIds=None,
+            includesegmentDataSourceIds=None,
             includeMetrics=None,
             ## These are all of the custom arguments
             condense=None
@@ -30,7 +31,7 @@ class Segments:
             """
                 Get multiple AAM Segments.
                 Args:
-                    containsTrait: (int) Trait ID.
+                    containssegment: (int) segment ID.
                     folderId: (int) Limit segments returned to Folder ID.
                     includePermissions: (bool) includes Permissions column.
                     permission: (str) Filters by permission type; ex: "READ".
@@ -39,7 +40,7 @@ class Segments:
                     dataSourceId: (int) Filters by Data Source ID.
                     mergeRuleDataSourceId: (int) Filters by mergeRuleDataSourceId.
                     pid: (int) Your AAM enterprise ID.
-                    includeTraitDataSourceIds: (bool) Includes includeTraitDataSourceIds column.
+                    includesegmentDataSourceIds: (bool) Includes includesegmentDataSourceIds column.
                     includeMetrics: (bool) Includes many metrics columns by segment.
                     condnse: (bool) Limit cols returned in df.
                     includeUsers: (bool) Include mapping of user IDs to names and email addresses.
@@ -48,7 +49,7 @@ class Segments:
             """
             ## segments endpoint
             request_url = "https://api.demdex.com/v1/segments/"
-            request_data = {"containsTrait":containsTrait,
+            request_data = {"containssegment":containssegment,
                 "folderId":folderId,
                 "includePermissions":includePermissions,
                 "permission":permission,
@@ -57,7 +58,7 @@ class Segments:
                 "dataSourceId":dataSourceId,
                 "mergeRuleDataSourceId":mergeRuleDataSourceId,
                 "pid":pid,
-                "includeTraitDataSourceIds":includeTraitDataSourceIds,
+                "includesegmentDataSourceIds":includesegmentDataSourceIds,
                 "type":type,
                 "includeMetrics":includeMetrics
                 }
@@ -88,7 +89,7 @@ class Segments:
                 limitCols=None,
                 includeMetrics=None,
                 includeExprTree=None,
-                includeTraitDataSourceIds=None,
+                includesegmentDataSourceIds=None,
                 includeInUseStatus=None,
                 ## These are all of the custom arguments
                 condense=None
@@ -99,10 +100,10 @@ class Segments:
                    sid: (int) Segment ID.
                    limitCols: (bool) List of df columns to subset.
                    includeMetrics: (bool) Includes many metrics columns by segment.
-                   includeExprTree: (bool) Includes traits, mappableTraits, codeViewOnly, and expressionTree columns.
-                   includeTraitDataSourceIds: (bool) Includes includeTraitDataSourceIds column.
+                   includeExprTree: (bool) Includes segments, mappablesegments, codeViewOnly, and expressionTree columns.
+                   includesegmentDataSourceIds: (bool) Includes includesegmentDataSourceIds column.
                    includeInUseStatus: (bool) Includes inUse column.
-                   includeMappedTraits: (bool) Include list of traits included in segment.
+                   includeMappedsegments: (bool) Include list of segments included in segment.
                Returns:
                    Transposed df of one segment to which the AAM API user has READ access.
             """
@@ -110,7 +111,7 @@ class Segments:
             request_url = "https://api.demdex.com/v1/segments/{0}".format(str(sid))
             request_data = {"includeMetrics":includeMetrics,
                 "includeExprTree":includeExprTree,
-                "includeTraitDataSourceIds":includeTraitDataSourceIds,
+                "includesegmentDataSourceIds":includesegmentDataSourceIds,
                 "includeInUseStatus":includeInUseStatus
                }
             ## Make request 
@@ -271,16 +272,17 @@ class Segments:
     @classmethod
     def update_many(cls, file_path):
         ## Required columns for API call
-        reqd_cols = pd.DataFrame(columns=['sid', 'name', 'description', 'integrationCode', 'segmentRule', 'folderId', 'dataSourceId'])
+        reqd_cols = pd.DataFrame(columns=['sid'])
         ## Load csv into pandas df
         if file_path.endswith('.csv'):
             df = pd.read_csv(file_path, engine='python')
         else:
             raise Exception('File type is not csv.')
         ## Check for reqd cols
-        if list(reqd_cols.columns) != list(df.columns):
+        col_check = all(item in df.columns for item in reqd_cols.columns)
+        if not col_check:
             reqd_cols.to_csv('aam_segment_update_template.csv', index=False)
-            raise Exception('CSV should include at least the following columns, with additional columns you want to update. Please re-upload file using template.')
+            raise Exception('Missing sid columns. Please re-upload file with template.')
         
         ## Declare counter vars
         num_segments_in_file = len(df)
@@ -289,22 +291,36 @@ class Segments:
         ## Handle for bad segments
         unsuccessful_segments = pd.DataFrame()
         
-        ## Get request data
-        segments_as_dict = df.to_dict(orient='records')
-
-        for segment in segments_as_dict:
-            sid = segment['sid']
-            segment_json = json.dumps(segment)  
+        for index, row in df.iterrows():
+            response = None
+            ## Get current segment info
+            current_segment_info = Segments.get_one(sid=row['sid'])
+            current_segment_info = current_segment_info[['name', 'dataSourceId', 'folderId', 'sid', 'segmentRule']]
+            current_segment_info = current_segment_info.to_frame().T
+            ## Determine diff of given file and segment GET request
+            col_diff = list(current_segment_info.columns.difference(df.columns))
+            current_segment_info = current_segment_info[col_diff]
+            current_segment_info['sid'] = row['sid']
+            segment_to_update = row.to_frame().T
+            ## Merge required cols if they do not exist in CSV
+            updated_segment = pd.merge(segment_to_update, current_segment_info)
+            ## Get request data
+            segment_as_dict = updated_segment.to_dict(orient='records')[0]
+            for key in segment_as_dict:
+              if isinstance(segment_as_dict[key], (int, np.integer)):
+                segment_as_dict[key] = int(segment_as_dict[key])
+            sid = segment_as_dict['sid']
+            segment_json = json.dumps(segment_as_dict)  
             request_url = "https://api.demdex.com/v1/segments/{0}".format(sid)
             response = requests.put(url = request_url,
                                     headers = Headers.createHeaders(json=True),
                                     data = segment_json)
-            ## Print error code if get request is unsuccessful
-            if response.status_code != 200:
-                print("Attempt to update segment {0} was unsuccessful. \nError code {1}. \nReason: {2}".format(sid, response.status_code, response.content.decode('utf-8')))
-                unsuccessful_segments = unsuccessful_segments.append(segment, ignore_index=True)
+            if response.status_code == 200:
+              num_successful_segments += 1       
             else:
-                num_successful_segments += 1
+              print(f'Attempt to update segment {row["sid"]} was unsuccessful.')
+              unsuccessful_segments = unsuccessful_segments.append(row, ignore_index=True)
+                
  
         ## Return bad segments
         if len(unsuccessful_segments) > 0:
