@@ -4,3 +4,4 @@ virtualenv/*
 tests/*
 notebooks/*
 *.ipynb
+credentials/
