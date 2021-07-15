@@ -252,8 +252,12 @@ class Traits:
         for index, row in df.iterrows():
             ## Get current trait info
             try:
+              list_of_fields = ['traitType', 'name', 'dataSourceId', 'folderId', 'sid', 'traitRule']
+              for col in df.columns:
+                  if row[col] == '':
+                      list_of_fields.append(col)
               current_trait_info = Traits.get_one(sid=row['sid'])
-              current_trait_info = current_trait_info[['traitType', 'name', 'dataSourceId', 'folderId', 'sid']]
+              current_trait_info = current_trait_info[list_of_fields]
               ## Determine diff of given file and trait GET request
               col_diff = list(current_trait_info.columns.difference(df.columns))
               current_trait_info = current_trait_info[col_diff]
