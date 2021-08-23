@@ -1,5 +1,7 @@
 # Adobe Audience Manager - Python Extension
 
+## I no longer work with Adobe Audience Manager, and I am retiring this repository, meaning you would need to fork this repository to make updates. If you would like to assume the maintainer role of the PyPi project, please contact me and I will add you as a collaborator. Thanks!
+
 This is a Python wrapper for the Adobe Audience Manager API.
 
 To get started [Generate a JWT Authentication using Adobe IO](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/jwt.md)
